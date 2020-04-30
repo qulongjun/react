@@ -6,6 +6,15 @@
 
 ### 进度记录
 
+#### 2020.04.30
+
+`packages/react/src/React.js`
+- 简单分析 React 暴露的一些常用的方法 / 组件或 API 等。
+
+`packages/react/src/ReactElement.js`
+- 阅读 `createElement` 方法（未完）
+
+
 ### 其他
 
 欢迎一起学习，本人也是在摸索阶段，如果解析错误，望指出并见谅。

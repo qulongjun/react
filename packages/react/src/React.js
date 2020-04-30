@@ -60,7 +60,9 @@ import {
   enableFundamentalAPI,
   enableScopeAPI,
 } from 'shared/ReactFeatureFlags';
+
 const React = {
+  // 提供了一堆处理 props.children 的 API，React.Children 是一个类数组，可以用下面提供的四个方法操作 children。
   Children: {
     map,
     forEach,
@@ -69,15 +71,51 @@ const React = {
     only,
   },
 
+  /*
+   * 新版本创建 ref 的方式，在旧版本中，可以使用 string ref 的方式定义，新版本中，只接受如下的方式定义：
+   * class App extends React.Component {
+   *  constructor(props){
+   *    // 第一种
+   *    this.ref = React.createRef();
+   *  }
+   *  render(){
+   *    // 第一种
+   *    return <div ref={this.ref} />
+   *
+   *    // 第二种
+   *    return <div ref={item=>this.ref = item} />
+   *  }
+   * }
+   */
   createRef,
+
+  // Component 和 PureComponent 两者的区别：PureComponent 在原型链上增加了一个 isPureReactComponent 的标识。
   Component,
   PureComponent,
 
+  /*
+   * createContext 是新版本提供的，用于解决跨多层组件之间的通信方案，老版本提供的 context API 已经被废弃。具体使用方法如下：
+   * const {Provider, Consumer} = React.createContext();
+   *
+   * const ParentComponent = props => (
+   *    <Provider value="This is a value">
+   *      {props.children}
+   *    </Provider>
+   * );
+   *
+   * const ChildComponent = props => (
+   *    <Consumer>
+   *      {value => <p>{value}</p>}
+   *    </Consumer>
+   * );
+   */
   createContext,
+  // 用于解决 HOC 的 ref 传递问题，使用方法：React.forwardRef((props, ref)=> <MyComponent {...props} ref={ref} />)
   forwardRef,
   lazy,
   memo,
 
+  // 以下为常用的 hooks ，具体等后续分析
   useCallback,
   useContext,
   useEffect,
@@ -89,12 +127,15 @@ const React = {
   useRef,
   useState,
 
+  // React 内置组件，具体等后续分析
   Fragment: REACT_FRAGMENT_TYPE,
   Profiler: REACT_PROFILER_TYPE,
   StrictMode: REACT_STRICT_MODE_TYPE,
   Suspense: REACT_SUSPENSE_TYPE,
   unstable_SuspenseList: REACT_SUSPENSE_LIST_TYPE,
 
+  // React 内置方法 API，具体等后续分析，这里 __DEV__ 表示 development 环境。
+  // development 环境下，走 createElementWithValidation，否则走 createElement。
   createElement: __DEV__ ? createElementWithValidation : createElement,
   cloneElement: __DEV__ ? cloneElementWithValidation : cloneElement,
   createFactory: __DEV__ ? createFactoryWithValidation : createFactory,

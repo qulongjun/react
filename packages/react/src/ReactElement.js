@@ -22,7 +22,13 @@ const RESERVED_PROPS = {
 
 let specialPropKeyWarningShown, specialPropRefWarningShown;
 
+/**
+ * 用来校验当前是否存在 Ref 属性
+ * @param config createElement 的第二个参数
+ * @returns {boolean} 是否存在 Ref 属性
+ */
 function hasValidRef(config) {
+  // DEV 模式先不看
   if (__DEV__) {
     if (hasOwnProperty.call(config, 'ref')) {
       const getter = Object.getOwnPropertyDescriptor(config, 'ref').get;
@@ -31,6 +37,7 @@ function hasValidRef(config) {
       }
     }
   }
+  // 非 DEV 模式，直接判断  config 对象里有没有 ref 属性。
   return config.ref !== undefined;
 }
 
@@ -306,8 +313,12 @@ export function jsxDEV(type, config, maybeKey, source, self) {
 }
 
 /**
- * Create and return a new ReactElement of the given type.
- * See https://reactjs.org/docs/react-api.html#createelement
+ * 该方法用于创建并返回一个新的 ReactElement 对象。
+ *
+ * @param type
+ * @param config
+ * @param children
+ * @returns {{ref: (string|Object), _owner: *, $$typeof: *, type: (ReactElement.props|*), key: *, props: *}}
  */
 export function createElement(type, config, children) {
   let propName;
@@ -321,9 +332,11 @@ export function createElement(type, config, children) {
   let source = null;
 
   if (config != null) {
+    // 如果 ref 存在，则暂存一份 ref 信息。
     if (hasValidRef(config)) {
       ref = config.ref;
     }
+    // 如果 key 存在，则暂存一份 key 信息，比如 Array 渲染时候指定的 key。
     if (hasValidKey(config)) {
       key = '' + config.key;
     }
