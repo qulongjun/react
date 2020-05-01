@@ -13,6 +13,7 @@ import ReactCurrentOwner from './ReactCurrentOwner';
 
 const hasOwnProperty = Object.prototype.hasOwnProperty;
 
+// React 组件内部保留的属性
 const RESERVED_PROPS = {
   key: true,
   ref: true,
@@ -315,10 +316,10 @@ export function jsxDEV(type, config, maybeKey, source, self) {
 /**
  * 该方法用于创建并返回一个新的 ReactElement 对象。
  *
- * @param type
- * @param config
- * @param children
- * @returns {{ref: (string|Object), _owner: *, $$typeof: *, type: (ReactElement.props|*), key: *, props: *}}
+ * @param type 当前组件类型和默认值（defaultProps）
+ * @param config 当前 Props 属性，其中包括 React 自用的（key/ref/self/source）属性和组件用的属性
+ * @param children 指定子组件 / 子元素
+ * @returns 返回一个 ReactElement 对象
  */
 export function createElement(type, config, children) {
   let propName;
@@ -343,23 +344,25 @@ export function createElement(type, config, children) {
 
     self = config.__self === undefined ? null : config.__self;
     source = config.__source === undefined ? null : config.__source;
-    // Remaining properties are added to a new props object
+    // 除了上述的 Props 外，其他需要被挂载在 props Object 上面。
     for (propName in config) {
       if (
         hasOwnProperty.call(config, propName) &&
         !RESERVED_PROPS.hasOwnProperty(propName)
       ) {
+        // 如果当前非 React 保留的 Props，则拷贝给 props 对象
         props[propName] = config[propName];
       }
     }
   }
 
-  // Children can be more than one argument, and those are transferred onto
-  // the newly allocated props object.
+  // 除了前两个之外，后面所有的参数都被视为 children
   const childrenLength = arguments.length - 2;
+  // 除前两个参数外，如果只升一个参数，则直接将这个参数传递给 props.children
   if (childrenLength === 1) {
     props.children = children;
   } else if (childrenLength > 1) {
+    // 否则，创建一个指定 childrenLength 参数个数的数组，并将该数组传递给 props.children
     const childArray = Array(childrenLength);
     for (let i = 0; i < childrenLength; i++) {
       childArray[i] = arguments[i + 2];
@@ -372,15 +375,18 @@ export function createElement(type, config, children) {
     props.children = childArray;
   }
 
-  // Resolve default props
+  // 这里是对默认值的绑定，在组件中，经常会出现 App.defaultProps = {someProps: value}。
   if (type && type.defaultProps) {
     const defaultProps = type.defaultProps;
+    // 遍历默认值
     for (propName in defaultProps) {
+      // 追加到 props 的前提是当前 props 必须为 undefined（即未在 config 中定义）
       if (props[propName] === undefined) {
         props[propName] = defaultProps[propName];
       }
     }
   }
+  // __DEV__ 先不看
   if (__DEV__) {
     if (key || ref) {
       const displayName =
@@ -395,6 +401,8 @@ export function createElement(type, config, children) {
       }
     }
   }
+
+  // 最后返回一个 ReactElement 对象
   return ReactElement(
     type,
     key,
