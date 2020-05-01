@@ -11,6 +11,7 @@
 // nor polyfill, then a plain number is used for performance.
 const hasSymbol = typeof Symbol === 'function' && Symbol.for;
 
+// 用来标识当前元素是 React 组件
 export const REACT_ELEMENT_TYPE = hasSymbol
   ? Symbol.for('react.element')
   : 0xeac7;

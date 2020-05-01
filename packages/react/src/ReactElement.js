@@ -117,20 +117,22 @@ function defineRefPropWarningGetter(props, displayName) {
  * @internal
  */
 const ReactElement = function(type, key, ref, self, source, owner, props) {
+
   const element = {
-    // This tag allows us to uniquely identify this as a React Element
+    // 这是一个 Tag，唯一的作用是用来标示当前元素是 ReactElement。
     $$typeof: REACT_ELEMENT_TYPE,
 
-    // Built-in properties that belong on the element
+    // 内置的一些 Props 属性
     type: type,
     key: key,
     ref: ref,
     props: props,
 
-    // Record the component responsible for creating this element.
+    // 记录创建该 ReactElement 的 Owner 是谁，默认为一个 Fiber。
     _owner: owner,
   };
 
+  // __DEV__ 先不看
   if (__DEV__) {
     // The validation flag is currently mutative. We put it on
     // an external backing store so that we can freeze the whole object.
